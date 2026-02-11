@@ -46,8 +46,23 @@ const AcceptanceForm = () => {
     }
     if (!formRef.current) return;
     setExporting(true);
+    const originals: { el: HTMLInputElement; display: string; span: HTMLSpanElement }[] = [];
     try {
-      // Wait a tick so the signature image renders in DOM
+      // Replace input values with styled spans for html2canvas
+      const inputs = formRef.current.querySelectorAll("input");
+      inputs.forEach((input) => {
+        const span = document.createElement("span");
+        span.textContent = input.value || input.placeholder;
+        span.style.cssText = window.getComputedStyle(input).cssText;
+        span.style.display = "inline-block";
+        span.style.borderBottom = window.getComputedStyle(input).borderBottom;
+        span.style.minWidth = input.offsetWidth + "px";
+        span.style.color = input.value ? window.getComputedStyle(input).color : "#999";
+        input.parentNode?.insertBefore(span, input);
+        originals.push({ el: input, display: input.style.display, span });
+        input.style.display = "none";
+      });
+
       await new Promise((r) => setTimeout(r, 100));
 
       const canvas = await html2canvas(formRef.current, {
@@ -77,6 +92,14 @@ const AcceptanceForm = () => {
       pdf.addImage(imgData, "PNG", xOffset, 0, finalWidth, finalHeight);
       pdf.save("防貓安全工程驗收與交接單.pdf");
     } finally {
+      // Restore inputs
+      if (formRef.current) {
+        const inputs = formRef.current.querySelectorAll("input");
+        originals.forEach(({ el, display, span }) => {
+          el.style.display = display || "";
+          span.remove();
+        });
+      }
       setExporting(false);
     }
   };
