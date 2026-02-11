@@ -57,6 +57,13 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        "section-header": {
+          DEFAULT: "hsl(var(--section-header-bg))",
+          foreground: "hsl(var(--section-header-fg))",
+        },
+        check: {
+          accent: "hsl(var(--check-accent))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
