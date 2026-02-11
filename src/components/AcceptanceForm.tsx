@@ -53,11 +53,17 @@ const AcceptanceForm = () => {
       inputs.forEach((input) => {
         const span = document.createElement("span");
         span.textContent = input.value || input.placeholder;
-        span.style.cssText = window.getComputedStyle(input).cssText;
+        const computed = window.getComputedStyle(input);
+        span.style.fontSize = computed.fontSize;
+        span.style.fontFamily = computed.fontFamily;
+        span.style.fontWeight = computed.fontWeight;
+        span.style.textAlign = computed.textAlign;
         span.style.display = "inline-block";
-        span.style.borderBottom = window.getComputedStyle(input).borderBottom;
         span.style.minWidth = input.offsetWidth + "px";
-        span.style.color = input.value ? window.getComputedStyle(input).color : "#999";
+        span.style.padding = computed.padding;
+        span.style.lineHeight = "1.8";
+        span.style.borderBottom = computed.borderBottom;
+        span.style.color = input.value ? computed.color : "#999";
         input.parentNode?.insertBefore(span, input);
         originals.push({ el: input, display: input.style.display, span });
         input.style.display = "none";
