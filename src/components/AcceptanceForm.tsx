@@ -154,7 +154,7 @@ const AcceptanceForm = () => {
               <div className="bg-white rounded-lg p-1">
                 <img src={dfLogo} alt="DF Logo" className="h-12 w-12 object-contain" />
               </div>
-              <span className="text-sm text-muted-foreground font-medium">DF創意家居</span>
+              <span className="text-lg font-medium text-muted-foreground">DF創意家居</span>
             </div>
             <h1 className="text-xl md:text-2xl font-bold text-foreground pt-2 whitespace-nowrap">
               防貓安全工程驗收與交接單
@@ -274,7 +274,7 @@ const AcceptanceForm = () => {
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <label className="font-medium text-sm">日期：</label>
+                  <label className="font-medium text-sm">簽署日期：</label>
                   <input value={signDate.year} onChange={(e) => setSignDate({ ...signDate, year: e.target.value })} className="w-16 border-b border-border bg-transparent pt-1 pb-2 px-1 leading-normal text-center text-sm focus:outline-none focus:border-primary" placeholder="年" />
                   <span className="text-sm">年</span>
                   <input value={signDate.month} onChange={(e) => setSignDate({ ...signDate, month: e.target.value })} className="w-12 border-b border-border bg-transparent pt-1 pb-2 px-1 leading-normal text-center text-sm focus:outline-none focus:border-primary" placeholder="月" />
