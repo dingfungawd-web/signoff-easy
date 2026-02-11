@@ -130,21 +130,19 @@ const AcceptanceForm = () => {
   return (
     <div className="min-h-screen bg-background py-6 px-4">
       <div className="max-w-3xl mx-auto space-y-4">
-        {/* Export button */}
-        <div className="flex justify-end print:hidden">
-          <button
-            onClick={exportPDF}
-            disabled={exporting}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-md font-medium transition-opacity ${
-              allChecked
-                ? "bg-primary text-primary-foreground hover:opacity-90"
-                : "bg-muted text-muted-foreground cursor-not-allowed"
-            } disabled:opacity-50`}
-          >
-            <FileDown className="w-4 h-4" />
-            {exporting ? "匯出中..." : "匯出 PDF"}
-          </button>
-        </div>
+        {/* Export button - fixed bottom right */}
+        <button
+          onClick={exportPDF}
+          disabled={exporting}
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-2.5 rounded-md font-medium shadow-lg transition-opacity print:hidden ${
+            allChecked
+              ? "bg-primary text-primary-foreground hover:opacity-90"
+              : "bg-muted text-muted-foreground cursor-not-allowed"
+          } disabled:opacity-50`}
+        >
+          <FileDown className="w-4 h-4" />
+          {exporting ? "匯出中..." : "匯出 PDF"}
+        </button>
 
         {/* Form content */}
         <div ref={formRef} className="bg-card rounded-lg shadow-md border border-border p-6 md:p-8 space-y-5">
