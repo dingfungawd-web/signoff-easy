@@ -26,7 +26,7 @@ const SignaturePad = ({ onSignatureChange, label }: SignaturePadProps) => {
       <div className="border-2 border-dashed border-border rounded-md bg-card overflow-hidden">
         <SignatureCanvas
           ref={sigRef}
-          penColor="hsl(220, 20%, 15%)"
+          penColor="#1a2332"
           canvasProps={{
             className: "w-full",
             style: { width: "100%", height: 150 },
