@@ -47,8 +47,25 @@ const AcceptanceForm = () => {
     if (!formRef.current) return;
     setExporting(true);
     try {
-      // Wait a tick so the signature image renders in DOM
       await new Promise((r) => setTimeout(r, 100));
+
+      // Replace inputs with spans for html2canvas (it can't render input values)
+      const inputs = formRef.current.querySelectorAll("input");
+      const replacements: { input: HTMLInputElement; span: HTMLSpanElement }[] = [];
+      inputs.forEach((input) => {
+        const span = document.createElement("span");
+        span.textContent = input.value || input.placeholder || "";
+        span.style.cssText = window.getComputedStyle(input).cssText;
+        span.style.display = "inline-block";
+        span.style.borderBottom = input.value ? "1px solid hsl(210 15% 85%)" : "1px solid transparent";
+        span.style.minWidth = input.offsetWidth + "px";
+        span.style.height = "auto";
+        span.style.whiteSpace = "nowrap";
+        if (!input.value) span.style.color = "hsl(220 10% 45%)";
+        input.parentNode?.insertBefore(span, input);
+        input.style.display = "none";
+        replacements.push({ input, span });
+      });
 
       const canvas = await html2canvas(formRef.current, {
         scale: 2,
@@ -57,17 +74,22 @@ const AcceptanceForm = () => {
         backgroundColor: "#fff",
         logging: false,
       });
+
+      // Restore inputs
+      replacements.forEach(({ input, span }) => {
+        input.style.display = "";
+        span.remove();
+      });
+
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       const imgRatio = canvas.width / canvas.height;
-      const pageRatio = pdfWidth / pdfHeight;
 
       let finalWidth = pdfWidth;
       let finalHeight = pdfWidth / imgRatio;
 
-      // Scale to fit within one A4 page
       if (finalHeight > pdfHeight) {
         finalHeight = pdfHeight;
         finalWidth = pdfHeight * imgRatio;
