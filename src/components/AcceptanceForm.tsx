@@ -4,6 +4,7 @@ import jsPDF from "jspdf";
 import SignaturePad from "./SignaturePad";
 import dfLogo from "@/assets/df-logo.png";
 import { CheckSquare, Square, FileDown } from "lucide-react";
+import { toast } from "sonner";
 
 const AcceptanceForm = () => {
   const formRef = useRef<HTMLDivElement>(null);
@@ -13,6 +14,7 @@ const AcceptanceForm = () => {
   const [inspectionChecks, setInspectionChecks] = useState([false, false, false, false, false]);
   const [habitChecks, setHabitChecks] = useState([false, false, false]);
   const [signature, setSignature] = useState<string | null>(null);
+  const [customerName, setCustomerName] = useState("");
   const [signDate, setSignDate] = useState({ year: "", month: "", day: "" });
   const [exporting, setExporting] = useState(false);
 
@@ -28,33 +30,44 @@ const AcceptanceForm = () => {
     setHabitChecks(next);
   };
 
+  const allChecked = inspectionChecks.every(Boolean) && habitChecks.every(Boolean);
+
   const exportPDF = async () => {
+    if (!allChecked) {
+      toast.error("請先完成所有剔選項目才可匯出 PDF");
+      return;
+    }
     if (!formRef.current) return;
     setExporting(true);
     try {
+      // Wait a tick so the signature image renders in DOM
+      await new Promise((r) => setTimeout(r, 100));
+
       const canvas = await html2canvas(formRef.current, {
         scale: 2,
         useCORS: true,
+        allowTaint: true,
         backgroundColor: "#fff",
+        logging: false,
       });
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgRatio = canvas.width / canvas.height;
+      const pageRatio = pdfWidth / pdfHeight;
 
-      if (pdfHeight <= pdf.internal.pageSize.getHeight()) {
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      } else {
-        // Multi-page
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        let yOffset = 0;
-        while (yOffset < pdfHeight) {
-          if (yOffset > 0) pdf.addPage();
-          pdf.addImage(imgData, "PNG", 0, -yOffset, pdfWidth, pdfHeight);
-          yOffset += pageHeight;
-        }
+      let finalWidth = pdfWidth;
+      let finalHeight = pdfWidth / imgRatio;
+
+      // Scale to fit within one A4 page
+      if (finalHeight > pdfHeight) {
+        finalHeight = pdfHeight;
+        finalWidth = pdfHeight * imgRatio;
       }
 
+      const xOffset = (pdfWidth - finalWidth) / 2;
+      pdf.addImage(imgData, "PNG", xOffset, 0, finalWidth, finalHeight);
       pdf.save("防貓安全工程驗收與交接單.pdf");
     } finally {
       setExporting(false);
@@ -78,7 +91,7 @@ const AcceptanceForm = () => {
   const CheckBox = ({ checked, onClick }: { checked: boolean; onClick: () => void }) => (
     <button type="button" onClick={onClick} className="flex-shrink-0">
       {checked ? (
-        <CheckSquare className="w-6 h-6 text-[hsl(var(--check-accent))]" />
+        <CheckSquare className="w-6 h-6 text-check-accent" />
       ) : (
         <Square className="w-6 h-6 text-muted-foreground" />
       )}
@@ -93,7 +106,11 @@ const AcceptanceForm = () => {
           <button
             onClick={exportPDF}
             disabled={exporting}
-            className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-md font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-md font-medium transition-opacity ${
+              allChecked
+                ? "bg-primary text-primary-foreground hover:opacity-90"
+                : "bg-muted text-muted-foreground cursor-not-allowed"
+            } disabled:opacity-50`}
           >
             <FileDown className="w-4 h-4" />
             {exporting ? "匯出中..." : "匯出 PDF"}
@@ -101,18 +118,17 @@ const AcceptanceForm = () => {
         </div>
 
         {/* Form content */}
-        <div ref={formRef} className="bg-card rounded-lg shadow-md border border-border p-6 md:p-8 space-y-6">
+        <div ref={formRef} className="bg-card rounded-lg shadow-md border border-border p-6 md:p-8 space-y-5">
           {/* Header */}
           <div className="text-center space-y-1">
             <div className="flex items-center justify-center gap-3">
-              <img src={dfLogo} alt="DF Logo" className="h-12 w-12 object-contain" />
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">防貓安全工程</p>
-                <p className="text-xs text-muted-foreground">DF 創意家居</p>
+              <div className="bg-white rounded-lg p-1">
+                <img src={dfLogo} alt="DF Logo" className="h-12 w-12 object-contain" />
               </div>
+              <span className="text-sm text-muted-foreground font-medium">DF創意家居</span>
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground pt-2">
-              全工程驗收與交接單
+            <h1 className="text-xl md:text-2xl font-bold text-foreground pt-2 whitespace-nowrap">
+              防貓安全工程驗收與交接單
             </h1>
           </div>
 
@@ -154,18 +170,17 @@ const AcceptanceForm = () => {
 
           {/* 第二部分 */}
           <section>
-            <div className="section-header">第二部分：現場驗收項目 (師傅演示，客戶確認)</div>
+            <div className="section-header text-base">第二部分：現場驗收項目 (師傅演示，客戶確認)</div>
             <div className="border border-t-0 border-border rounded-b-md divide-y divide-border">
-              {/* Table header */}
               <div className="grid grid-cols-[1fr_auto] font-semibold text-sm bg-muted px-4 py-2">
                 <span>驗收項目 / 檢查動作</span>
                 <span className="w-16 text-center">確認</span>
               </div>
               {inspectionItems.map((item, i) => (
-                <div key={i} className="grid grid-cols-[1fr_auto] items-center px-4 py-3">
+                <div key={i} className="grid grid-cols-[1fr_auto] items-center px-4 py-2.5">
                   <div>
-                    <span className="font-medium">{item.title}</span>
-                    <p className="text-sm text-muted-foreground mt-0.5">{item.desc}</p>
+                    <span className="font-medium text-sm">{item.title}</span>
+                    <p className="text-xs text-muted-foreground mt-0.5">{item.desc}</p>
                   </div>
                   <div className="w-16 flex justify-center">
                     <CheckBox checked={inspectionChecks[i]} onClick={() => toggleInspection(i)} />
@@ -177,15 +192,15 @@ const AcceptanceForm = () => {
 
           {/* 第三部分 */}
           <section>
-            <div className="section-header">第三部分：全家動員．守護主子</div>
+            <div className="section-header text-base">第三部分：全家動員．守護主子</div>
             <div className="border border-t-0 border-border rounded-b-md p-4 space-y-2">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 為了確保家中每位成員（包括長輩、小朋友及家傭姐姐）都能成為主子的「安全守護員」，本人同意配合以下生活小習慣：
               </p>
               {habitItems.map((text, i) => (
                 <div key={i} className="flex items-start gap-3 py-1">
                   <CheckBox checked={habitChecks[i]} onClick={() => toggleHabit(i)} />
-                  <span className="text-sm leading-relaxed">{text}</span>
+                  <span className="text-xs leading-relaxed">{text}</span>
                 </div>
               ))}
             </div>
@@ -193,12 +208,12 @@ const AcceptanceForm = () => {
 
           {/* 第四部分 */}
           <section>
-            <div className="section-header">第四部分：安全守護承諾</div>
-            <div className="border border-t-0 border-border rounded-b-md p-4 space-y-4">
-              <p className="text-sm text-muted-foreground italic">
+            <div className="section-header text-base">第四部分：安全守護承諾</div>
+            <div className="border border-t-0 border-border rounded-b-md p-4 space-y-3">
+              <p className="text-xs text-muted-foreground italic">
                 這份工程凝聚了 DF 對生命的尊重，為了讓這份守護長久有效，我們與客戶達成以下承諾：
               </p>
-              <div className="space-y-3 text-sm leading-relaxed">
+              <div className="space-y-2 text-xs leading-relaxed">
                 <div>
                   <span className="font-semibold text-foreground">工藝認可：</span>
                   <span className="text-foreground"> 本人已現場檢查所有安裝位置，確認 DF 的安裝專業、穩固且狀態良好，滿意交接。</span>
@@ -214,8 +229,21 @@ const AcceptanceForm = () => {
               </div>
 
               {/* Signature */}
-              <div className="border-t border-border pt-4 space-y-4">
+              <div className="border-t border-border pt-3 space-y-3">
                 <SignaturePad label="客戶簽署：" onSignatureChange={setSignature} />
+                {/* Render signature as img for PDF capture */}
+                {signature && (
+                  <img src={signature} alt="客戶簽名" className="hidden" id="signature-preview" />
+                )}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <label className="font-medium text-sm w-24 flex-shrink-0">客戶姓名：</label>
+                  <input
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    className="flex-1 border-b border-border bg-transparent py-1 px-2 text-sm focus:outline-none focus:border-primary"
+                    placeholder="請輸入客戶姓名"
+                  />
+                </div>
                 <div className="flex items-center gap-2">
                   <label className="font-medium text-sm">日期：</label>
                   <input value={signDate.year} onChange={(e) => setSignDate({ ...signDate, year: e.target.value })} className="w-16 border-b border-border bg-transparent py-1 px-1 text-center text-sm focus:outline-none focus:border-primary" placeholder="年" />
