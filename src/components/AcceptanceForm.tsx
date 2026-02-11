@@ -46,29 +46,8 @@ const AcceptanceForm = () => {
     }
     if (!formRef.current) return;
     setExporting(true);
-    const originals: { el: HTMLInputElement; display: string; span: HTMLSpanElement }[] = [];
     try {
-      // Replace input values with styled spans for html2canvas
-      const inputs = formRef.current.querySelectorAll("input");
-      inputs.forEach((input) => {
-        const span = document.createElement("span");
-        span.textContent = input.value || input.placeholder;
-        const computed = window.getComputedStyle(input);
-        span.style.fontSize = computed.fontSize;
-        span.style.fontFamily = computed.fontFamily;
-        span.style.fontWeight = computed.fontWeight;
-        span.style.textAlign = computed.textAlign;
-        span.style.display = "inline-block";
-        span.style.minWidth = input.offsetWidth + "px";
-        span.style.padding = computed.padding;
-        span.style.lineHeight = "1.8";
-        span.style.borderBottom = computed.borderBottom;
-        span.style.color = input.value ? computed.color : "#999";
-        input.parentNode?.insertBefore(span, input);
-        originals.push({ el: input, display: input.style.display, span });
-        input.style.display = "none";
-      });
-
+      // Wait a tick so the signature image renders in DOM
       await new Promise((r) => setTimeout(r, 100));
 
       const canvas = await html2canvas(formRef.current, {
@@ -98,14 +77,6 @@ const AcceptanceForm = () => {
       pdf.addImage(imgData, "PNG", xOffset, 0, finalWidth, finalHeight);
       pdf.save("防貓安全工程驗收與交接單.pdf");
     } finally {
-      // Restore inputs
-      if (formRef.current) {
-        const inputs = formRef.current.querySelectorAll("input");
-        originals.forEach(({ el, display, span }) => {
-          el.style.display = display || "";
-          span.remove();
-        });
-      }
       setExporting(false);
     }
   };
@@ -177,7 +148,7 @@ const AcceptanceForm = () => {
                 <input
                   value={customerAddress}
                   onChange={(e) => setCustomerAddress(e.target.value)}
-                  className="flex-1 border-b border-border bg-transparent py-2 px-2 leading-relaxed focus:outline-none focus:border-primary"
+                  className="flex-1 border-b border-border bg-transparent py-1 px-2 pb-0 leading-normal focus:outline-none focus:border-primary"
                   placeholder="請輸入地址"
                 />
               </div>
@@ -186,18 +157,18 @@ const AcceptanceForm = () => {
                 <input
                   value={installerName}
                   onChange={(e) => setInstallerName(e.target.value)}
-                  className="flex-1 border-b border-border bg-transparent py-2 px-2 leading-relaxed focus:outline-none focus:border-primary"
+                  className="flex-1 border-b border-border bg-transparent py-1 px-2 pb-0 leading-normal focus:outline-none focus:border-primary"
                   placeholder="請輸入師傅姓名"
                 />
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <label className="font-medium w-24 flex-shrink-0">安裝日期：</label>
                 <div className="flex items-center gap-1">
-                  <input value={installDate.year} onChange={(e) => setInstallDate({ ...installDate, year: e.target.value })} className="w-16 border-b border-border bg-transparent py-2 px-1 leading-relaxed text-center focus:outline-none focus:border-primary" placeholder="年" />
+                  <input value={installDate.year} onChange={(e) => setInstallDate({ ...installDate, year: e.target.value })} className="w-16 border-b border-border bg-transparent py-1 px-1 pb-0 leading-normal text-center focus:outline-none focus:border-primary" placeholder="年" />
                   <span>年</span>
-                  <input value={installDate.month} onChange={(e) => setInstallDate({ ...installDate, month: e.target.value })} className="w-12 border-b border-border bg-transparent py-2 px-1 leading-relaxed text-center focus:outline-none focus:border-primary" placeholder="月" />
+                  <input value={installDate.month} onChange={(e) => setInstallDate({ ...installDate, month: e.target.value })} className="w-12 border-b border-border bg-transparent py-1 px-1 pb-0 leading-normal text-center focus:outline-none focus:border-primary" placeholder="月" />
                   <span>月</span>
-                  <input value={installDate.day} onChange={(e) => setInstallDate({ ...installDate, day: e.target.value })} className="w-12 border-b border-border bg-transparent py-2 px-1 leading-relaxed text-center focus:outline-none focus:border-primary" placeholder="日" />
+                  <input value={installDate.day} onChange={(e) => setInstallDate({ ...installDate, day: e.target.value })} className="w-12 border-b border-border bg-transparent py-1 px-1 pb-0 leading-normal text-center focus:outline-none focus:border-primary" placeholder="日" />
                   <span>日</span>
                 </div>
               </div>
@@ -276,17 +247,17 @@ const AcceptanceForm = () => {
                   <input
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="flex-1 border-b border-border bg-transparent py-2 px-2 leading-relaxed text-sm focus:outline-none focus:border-primary"
+                    className="flex-1 border-b border-border bg-transparent py-1 px-2 pb-0 leading-normal text-sm focus:outline-none focus:border-primary"
                     placeholder="請輸入客戶姓名"
                   />
                 </div>
                 <div className="flex items-center gap-2">
                   <label className="font-medium text-sm">日期：</label>
-                  <input value={signDate.year} onChange={(e) => setSignDate({ ...signDate, year: e.target.value })} className="w-16 border-b border-border bg-transparent py-2 px-1 leading-relaxed text-center text-sm focus:outline-none focus:border-primary" placeholder="年" />
+                  <input value={signDate.year} onChange={(e) => setSignDate({ ...signDate, year: e.target.value })} className="w-16 border-b border-border bg-transparent py-1 px-1 pb-0 leading-normal text-center text-sm focus:outline-none focus:border-primary" placeholder="年" />
                   <span className="text-sm">年</span>
-                  <input value={signDate.month} onChange={(e) => setSignDate({ ...signDate, month: e.target.value })} className="w-12 border-b border-border bg-transparent py-2 px-1 leading-relaxed text-center text-sm focus:outline-none focus:border-primary" placeholder="月" />
+                  <input value={signDate.month} onChange={(e) => setSignDate({ ...signDate, month: e.target.value })} className="w-12 border-b border-border bg-transparent py-1 px-1 pb-0 leading-normal text-center text-sm focus:outline-none focus:border-primary" placeholder="月" />
                   <span className="text-sm">月</span>
-                  <input value={signDate.day} onChange={(e) => setSignDate({ ...signDate, day: e.target.value })} className="w-12 border-b border-border bg-transparent py-2 px-1 leading-relaxed text-center text-sm focus:outline-none focus:border-primary" placeholder="日" />
+                  <input value={signDate.day} onChange={(e) => setSignDate({ ...signDate, day: e.target.value })} className="w-12 border-b border-border bg-transparent py-1 px-1 pb-0 leading-normal text-center text-sm focus:outline-none focus:border-primary" placeholder="日" />
                   <span className="text-sm">日</span>
                 </div>
               </div>
