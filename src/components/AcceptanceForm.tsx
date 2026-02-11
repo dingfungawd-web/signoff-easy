@@ -148,7 +148,7 @@ const AcceptanceForm = () => {
                 <input
                   value={customerAddress}
                   onChange={(e) => setCustomerAddress(e.target.value)}
-                  className="flex-1 border-b border-border bg-transparent py-1 px-2 pb-0 leading-normal focus:outline-none focus:border-primary"
+                  className="flex-1 border-b border-border bg-transparent py-2 px-2 leading-relaxed focus:outline-none focus:border-primary"
                   placeholder="請輸入地址"
                 />
               </div>
@@ -157,18 +157,18 @@ const AcceptanceForm = () => {
                 <input
                   value={installerName}
                   onChange={(e) => setInstallerName(e.target.value)}
-                  className="flex-1 border-b border-border bg-transparent py-1 px-2 pb-0 leading-normal focus:outline-none focus:border-primary"
+                  className="flex-1 border-b border-border bg-transparent py-2 px-2 leading-relaxed focus:outline-none focus:border-primary"
                   placeholder="請輸入師傅姓名"
                 />
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <label className="font-medium w-24 flex-shrink-0">安裝日期：</label>
                 <div className="flex items-center gap-1">
-                  <input value={installDate.year} onChange={(e) => setInstallDate({ ...installDate, year: e.target.value })} className="w-16 border-b border-border bg-transparent py-1 px-1 pb-0 leading-normal text-center focus:outline-none focus:border-primary" placeholder="年" />
+                  <input value={installDate.year} onChange={(e) => setInstallDate({ ...installDate, year: e.target.value })} className="w-16 border-b border-border bg-transparent py-2 px-1 leading-relaxed text-center focus:outline-none focus:border-primary" placeholder="年" />
                   <span>年</span>
-                  <input value={installDate.month} onChange={(e) => setInstallDate({ ...installDate, month: e.target.value })} className="w-12 border-b border-border bg-transparent py-1 px-1 pb-0 leading-normal text-center focus:outline-none focus:border-primary" placeholder="月" />
+                  <input value={installDate.month} onChange={(e) => setInstallDate({ ...installDate, month: e.target.value })} className="w-12 border-b border-border bg-transparent py-2 px-1 leading-relaxed text-center focus:outline-none focus:border-primary" placeholder="月" />
                   <span>月</span>
-                  <input value={installDate.day} onChange={(e) => setInstallDate({ ...installDate, day: e.target.value })} className="w-12 border-b border-border bg-transparent py-1 px-1 pb-0 leading-normal text-center focus:outline-none focus:border-primary" placeholder="日" />
+                  <input value={installDate.day} onChange={(e) => setInstallDate({ ...installDate, day: e.target.value })} className="w-12 border-b border-border bg-transparent py-2 px-1 leading-relaxed text-center focus:outline-none focus:border-primary" placeholder="日" />
                   <span>日</span>
                 </div>
               </div>
@@ -247,17 +247,17 @@ const AcceptanceForm = () => {
                   <input
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="flex-1 border-b border-border bg-transparent py-1 px-2 pb-0 leading-normal text-sm focus:outline-none focus:border-primary"
+                    className="flex-1 border-b border-border bg-transparent py-2 px-2 leading-relaxed text-sm focus:outline-none focus:border-primary"
                     placeholder="請輸入客戶姓名"
                   />
                 </div>
                 <div className="flex items-center gap-2">
                   <label className="font-medium text-sm">日期：</label>
-                  <input value={signDate.year} onChange={(e) => setSignDate({ ...signDate, year: e.target.value })} className="w-16 border-b border-border bg-transparent py-1 px-1 pb-0 leading-normal text-center text-sm focus:outline-none focus:border-primary" placeholder="年" />
+                  <input value={signDate.year} onChange={(e) => setSignDate({ ...signDate, year: e.target.value })} className="w-16 border-b border-border bg-transparent py-2 px-1 leading-relaxed text-center text-sm focus:outline-none focus:border-primary" placeholder="年" />
                   <span className="text-sm">年</span>
-                  <input value={signDate.month} onChange={(e) => setSignDate({ ...signDate, month: e.target.value })} className="w-12 border-b border-border bg-transparent py-1 px-1 pb-0 leading-normal text-center text-sm focus:outline-none focus:border-primary" placeholder="月" />
+                  <input value={signDate.month} onChange={(e) => setSignDate({ ...signDate, month: e.target.value })} className="w-12 border-b border-border bg-transparent py-2 px-1 leading-relaxed text-center text-sm focus:outline-none focus:border-primary" placeholder="月" />
                   <span className="text-sm">月</span>
-                  <input value={signDate.day} onChange={(e) => setSignDate({ ...signDate, day: e.target.value })} className="w-12 border-b border-border bg-transparent py-1 px-1 pb-0 leading-normal text-center text-sm focus:outline-none focus:border-primary" placeholder="日" />
+                  <input value={signDate.day} onChange={(e) => setSignDate({ ...signDate, day: e.target.value })} className="w-12 border-b border-border bg-transparent py-2 px-1 leading-relaxed text-center text-sm focus:outline-none focus:border-primary" placeholder="日" />
                   <span className="text-sm">日</span>
                 </div>
               </div>
